@@ -118,7 +118,7 @@ function cargarTabla(listaPersonasObj) {
         let btnEliminar = document.createElement("button");
         btnEliminar.textContent = "Eliminar";
         btnModificar.addEventListener('click', function () {
-            modificarEvento(persona.id);
+            eliminarPersona(persona.id);
         });
         tdEliminar.appendChild(btnEliminar);
         trData.appendChild(tdEliminar);
@@ -240,6 +240,46 @@ function modificarPersonaAPI(persona) {
             });
     });
 }
+function eliminarPersonaAPI(idPersona) {
+    return new Promise((resolve, reject) => {
+        mostrarSpinner();
+
+        let url = `https://examenesutn.vercel.app/api/PersonaCiudadanoExtranjero`;
+        let headers = {
+            'Content-Type': 'application/json'
+        };
+
+        let personaDelete = {
+            id: idPersona,
+        };
+
+        fetch(url, {
+                method: 'DELETE',
+                headers: headers,
+                body: JSON.stringify(personaDelete)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('No se pudo realizar la operación.');
+                }
+                resolve();
+                eliminarPersonaArray(idPersona);
+                limpiarFormABM();
+                retornarFormDatos();
+            })
+            .catch(error => {
+                reject(error);
+                limpiarFormABM();
+                retornarFormDatos();
+                alert("Ocurrio un error al modificar persona");
+            })
+            .finally(() => {
+                ocultarSpinner();
+            });
+    });
+}
+
+
 
 //#endregion
 function agregarPersona() {
@@ -316,6 +356,7 @@ function mostrarFormularioABM(edicion) {
     else {
         document.getElementById("botonCrear").style.display = "inline";
         document.getElementById("botonModificar").style.display = "none";
+        document.getElementById("tipoNew").disabled = false;
     }
 }
 
@@ -371,7 +412,7 @@ function modificarPersonaArray(personaUpdate){
         personaModificar.fechaNacimiento = personaUpdate.fechaNacimiento;
         personaModificar.dni = personaUpdate.dni;
         personaModificar.paisOrigen = personaUpdate.paisOrigen;
-        alert("Se modifico el ID:" + persona.id);
+        alert("Se modifico el ID:" + personaUpdate.id);
         cargarTabla(listaPersonasObj);
         retornarFormDatos();
     }
@@ -409,6 +450,31 @@ function bloquearCampoUnico() {
     else {
         document.getElementById("paisNew").disabled = false;
         document.getElementById("dniNew").disabled = true;
+    }
+}
+
+function eliminarPersona(idPersona) {
+    respuesta = confirm("Desea eliminar?");
+    if (idPersona > 0 && respuesta) {
+        eliminarPersonaAPI(idPersona);
+    }
+    else
+    {
+        retornarFormDatos();
+    }
+}
+
+function eliminarPersonaArray(idPersona)
+{
+    if (idPersona > 0) {
+        listaPersonasObj = listaPersonasObj.filter(persona => persona.id != idPersona);
+        alert("Se elimino el ID:" + idPersona);
+        cargarTabla(listaPersonasObj);
+        retornarFormDatos();
+    }
+    else
+    {
+        retornarFormDatos();
     }
 }
 
