@@ -117,7 +117,7 @@ function cargarTabla(listaPersonasObj) {
         let tdEliminar = document.createElement("td");
         let btnEliminar = document.createElement("button");
         btnEliminar.textContent = "Eliminar";
-        btnModificar.addEventListener('click', function () {
+        btnEliminar.addEventListener('click', function () {
             eliminarPersona(persona.id);
         });
         tdEliminar.appendChild(btnEliminar);
@@ -271,7 +271,7 @@ function eliminarPersonaAPI(idPersona) {
                 reject(error);
                 limpiarFormABM();
                 retornarFormDatos();
-                alert("Ocurrio un error al modificar persona");
+                alert("Ocurrio un error al eliminar persona");
             })
             .finally(() => {
                 ocultarSpinner();
